@@ -22,7 +22,7 @@
   <script>
  
   let redirect_uri = `${window.location.protocol}//${window.location.host}`;
-
+ console.log(window.location.hash)
 if (window.location.pathname) {
   redirect_uri += window.location.pathname;
 }
