@@ -22,7 +22,10 @@
   <script>
  
   let redirect_uri = `${window.location.protocol}//${window.location.host}`;
- console.log(window.location.hash)
+ if(window.location.hash.indexOf('access_token')) {
+      console.log(window.location.hash.split('access_token=')[1].split('&')[0])
+ }     
+
 if (window.location.pathname) {
   redirect_uri += window.location.pathname;
 }
