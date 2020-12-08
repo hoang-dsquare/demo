@@ -62,10 +62,10 @@
     const webex = window.webex = Webex.init({
         config: {
             credentials: {
-                //client_id: 'Cb257d2a93b52b6752da37c61963292c766264023b6f42f391d887a100ad9bb4b',
-                client_id: 'C521990cb8bb210f4c46e32ce23094d3eab68b21300d1e371153c522e74048c20',
+                client_id: 'Cb257d2a93b52b6752da37c61963292c766264023b6f42f391d887a100ad9bb4b',
+                //client_id: 'C521990cb8bb210f4c46e32ce23094d3eab68b21300d1e371153c522e74048c20',
                 redirect_uri,
-                scope: 'meeting:recordings_read spark:kms meeting:admin_schedule_write meeting:schedules_read meeting:admin_recordings_write meeting:preferences_write meeting:recordings_write meeting:preferences_read meeting:admin_recordings_read meeting:admin_schedule_read meeting:schedules_write'
+                scope: 'meeting:recordings_read spark:all meeting:admin_schedule_write meeting:schedules_read meeting:admin_recordings_write meeting:preferences_write meeting:recordings_write meeting:preferences_read meeting:admin_recordings_read meeting:admin_schedule_read meeting:schedules_write'
                 //scope: 'meeting:recordings_read spark:all meeting:admin_schedule_write meeting:schedules_read meeting:admin_recordings_write meeting:preferences_write meeting:recordings_write meeting:preferences_read meeting:admin_recordings_read meeting:admin_schedule_read meeting:schedules_write'
             }
         }
