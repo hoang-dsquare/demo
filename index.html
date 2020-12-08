@@ -5,7 +5,47 @@
     <script crossorigin src="https://unpkg.com/webex@^1/umd/webex.min.js"></script>
 </head>
 <body>
+    <form id="credentials">
+        <fieldset>
+          <legend>Credentials</legend>
+          <input id="access-token" name="accessToken" placeholder="Access Token" value="" type="text" />
+          <button id="access-token-save" type="button" onclick="initWebex()">Webex.init()</button>
+          <label id="access-token-status"></label>
+        </fieldset>
+      </form>
   <script>
+        const tokenElm = document.querySelector('#access-token');
+        const saveElm = document.querySelector('#access-token-save');
+        const authStatusElm = document.querySelector('#access-token-status');
+        const registerElm = document.querySelector('#registration-register');
+        const unregisterElm = document.querySelector('#registration-unregister');
+        const registrationStatusElm = document.querySelector('#registration-status');
+      function initWebex() {
+          console.log('Authentication#initWebex()');
+
+          tokenElm.disabled = true;
+          saveElm.disabled = true;
+          authStatusElm.innerHTML = 'initializing...';
+
+          webex = window.webex = Webex.init({
+            config: {
+              logger: {
+                level: 'debug'
+              },
+              // Any other sdk config we need
+            },
+            credentials: {
+              access_token: tokenElm.value
+            }
+          });
+
+          webex.once('ready', () => {
+            console.log('Authentication#initWebex() :: Webex Ready');
+            registerElm.disabled = false;
+            authStatusElm.innerHTML = 'Saved';
+          });
+    }
+      
   let redirect_uri = `${window.location.protocol}//${window.location.host}`;
 
 if (window.location.pathname) {
@@ -21,8 +61,9 @@ const webex = window.webex = Webex.init({
   config: {
     credentials: {
       client_id: 'Cb257d2a93b52b6752da37c61963292c766264023b6f42f391d887a100ad9bb4b',
+      response_type: 'token',  
       redirect_uri,
-      scope: 'spark:all spark:kms'
+      scope: 'meeting:recordings_read spark:kms meeting:admin_schedule_write meeting:schedules_read meeting:admin_recordings_write meeting:preferences_write meeting:recordings_write meeting:preferences_read meeting:admin_recordings_read meeting:admin_schedule_read meeting:schedules_write'
     }
   }
 });
@@ -32,7 +73,6 @@ webex.once('ready', () => {
   document.getElementById('authorization').addEventListener('submit', (event) => {
     // let's make sure we don't reload the page when we submit the form
     event.preventDefault();
-
     // initiate the login sequence if not authenticated.
     webex.authorization.initiateLogin();
   });
