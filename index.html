@@ -77,7 +77,15 @@ webex.once('ready', () => {
 
     authStatus.innerHTML = 'Authenticated';
     authStatus.style = 'color: green';
-  }
+      
+      webex.rooms
+      .create({
+        title: 'My First Room!'
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+      }
 });
   </script>
 </body>
