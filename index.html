@@ -2,86 +2,111 @@
 <html>
 <title>Webex Teams Meetings Quick Start</title>
 <head>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script crossorigin src="https://unpkg.com/webex@^1/umd/webex.min.js"></script>
+    <script src="./app.js"></script>
 </head>
 <body>
-    <form id="authorization">
-      <input id="authenticate-button" title="authenticate" type="submit" value="authenticate">
-      <label for="authenticate"> &lt-- click here to authenticate</label>
-    </form>
+<form id="authorization">
+    <input id="authenticate-button" title="authenticate" type="submit" value="authenticate">
+    <label for="authenticate"> &lt-- click here to authenticate</label>
+</form>
 
-    <form id="logout">
-      <input id="logout-button" title="logout" type="submit" value="logout">
-      <label for="logout"> &lt-- click here to logout</label>
-    </form>
+<form id="logout">
+    <input id="logout-button" title="logout" type="submit" value="logout">
+    <label for="logout"> &lt-- click here to logout</label>
+</form>
 
-    <div style="width: 30vw; display: flex; flex-direction: row; justify-content: space-between">
-      <h3>Authentication Status: </h3>
-      <h3 style="color:red" id="authentication-status">Not Authenticated</h3>
-    </div>
-  <script>
- 
-  let redirect_uri = `${window.location.protocol}//${window.location.host}`;
- if(window.location.hash.indexOf('access_token') !== -1) {
-      console.log(window.location.hash.split('access_token=')[1].split('&')[0])
- }     
+<div style="width: 30vw; display: flex; flex-direction: row; justify-content: space-between">
+    <h3>Authentication Status: </h3>
+    <h3 style="color:red" id="authentication-status">Not Authenticated</h3>
+</div>
 
-if (window.location.pathname) {
-  redirect_uri += window.location.pathname;
-}
+<div>
+    <h3>Meeting data</h3>
+    <pre id="inputMeeting"> </pre>
+    <div>Result:</div>
+    <pre id="resultMeeting"> </pre>
+    <button onclick="onCreateMeeting()">Create Schedule meeting</button>
+    <br>
+    ------------------------------
+    <h3>Tour guild Meeting now</h3>
+    <div>Result:</div>
+    <pre id="resultMeetingNow"> </pre>
+    <button onclick="onTourGuildNow()">Get meeting now</button>
 
-// Inititate the SDK
-// IN A PRODUCTION APP YOU SHOULD NOT HARDCODE THESE VALUES BUT INSTEAD LOAD
-// THEM FROM THE ENVIRONMENT AT BUILD TIME. SECRETS AND OTHER CREDENTIALS SHOULD
-// NOT BE COMMITTED TO THE CODEBASE.
-// eslint-disable-next-line no-multi-assign
-const webex = window.webex = Webex.init({
-  config: {
-    credentials: {
-      client_id: 'Cb257d2a93b52b6752da37c61963292c766264023b6f42f391d887a100ad9bb4b',
-      redirect_uri,
-      scope: 'meeting:recordings_read spark:all meeting:admin_schedule_write meeting:schedules_read meeting:admin_recordings_write meeting:preferences_write meeting:recordings_write meeting:preferences_read meeting:admin_recordings_read meeting:admin_schedule_read meeting:schedules_write'
+</div>
+<script>
+    var date = new Date();
+    var dataMeeting = {
+        "title": "Test create meeting online " + Math.random().toString(10).slice(-10),
+        "password": Math.random().toString(10).slice(-10),
+        "start": date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + (date.getDate() + 1) + " 20:00:00",
+        "end": date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + (date.getDate() + 1) + " 21:00:00",
+        "timezone": "Asia/Tokyo",
+        "enabledAutoRecordMeeting": false,
+        "allowAnyUserToBeCoHost": false
+    };
+    $('#inputMeeting').html(JSON.stringify(dataMeeting, undefined, 2))
+
+    let redirect_uri = `${window.location.protocol}//${window.location.host}`;
+    if (window.location.hash.indexOf('access_token') !== -1) {
+        var token = window.location.hash.split('access_token=')[1].split('&')[0];
+        localStorage.setItem('access_token', token)
     }
-  }
-});
 
-webex.once('ready', () => {
-  // Now, let's set up the event listener for the Authenticate Button
-  document.getElementById('authorization').addEventListener('submit', (event) => {
-    // let's make sure we don't reload the page when we submit the form
-    event.preventDefault();
-    // initiate the login sequence if not authenticated.
-    webex.authorization.initiateLogin();
-  });
-
-  // Now, let's set up the event listener for the Authenticate Button
-  document.getElementById('logout').addEventListener('submit', (event) => {
-    // let's make sure we don't reload the page when we submit the form
-    event.preventDefault();
-
-    if (webex.canAuthorize) {
-      // if already authenticated, logout on click
-      webex.logout();
+    if (window.location.pathname) {
+        redirect_uri += window.location.pathname;
     }
-    else {
-      // No user is authenticated
-      console.log('cannot logout when no user is authenticated');
+    const webex = window.webex = Webex.init({
+        config: {
+            credentials: {
+                //client_id: 'Cb257d2a93b52b6752da37c61963292c766264023b6f42f391d887a100ad9bb4b',
+                client_id: 'C521990cb8bb210f4c46e32ce23094d3eab68b21300d1e371153c522e74048c20',
+                redirect_uri,
+                scope: 'meeting:recordings_read spark:kms meeting:admin_schedule_write meeting:schedules_read meeting:admin_recordings_write meeting:preferences_write meeting:recordings_write meeting:preferences_read meeting:admin_recordings_read meeting:admin_schedule_read meeting:schedules_write'
+                //scope: 'meeting:recordings_read spark:all meeting:admin_schedule_write meeting:schedules_read meeting:admin_recordings_write meeting:preferences_write meeting:recordings_write meeting:preferences_read meeting:admin_recordings_read meeting:admin_schedule_read meeting:schedules_write'
+            }
+        }
+    });
+
+    webex.once('ready', () => {
+        document.getElementById('authorization').addEventListener('submit', (event) => {
+            event.preventDefault();
+            webex.authorization.initiateLogin();
+        });
+        document.getElementById('logout').addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (webex.canAuthorize) {
+                webex.logout();
+            } else {
+                console.log('cannot logout when no user is authenticated');
+            }
+        });
+        if (webex.canAuthorize) {
+            const authStatus = document.getElementById('authentication-status');
+            authStatus.innerHTML = 'Authenticated';
+            authStatus.style = 'color: green';
+        }
+    });
+
+    function onCreateMeeting() {
+        createMeeting(dataMeeting, function (res) {
+            $('#resultMeeting').html(JSON.stringify(res, undefined, 2))
+        }, function (res) {
+
+            $('#resultMeeting').html(res.responseText)
+        })
     }
-  });
 
-  if (webex.canAuthorize) {
-    // Authorization is successful
-
-    // your app logic goes here
-
-    // Change Authentication status to `Authenticated`
-    const authStatus = document.getElementById('authentication-status');
-
-    authStatus.innerHTML = 'Authenticated';
-    authStatus.style = 'color: green'; 
-      
-     }
-});
-  </script>
+    function onTourGuildNow() {
+        getMeetingNow(function (res) {
+            $('#resultMeetingNow').html(JSON.stringify(res, undefined, 2))
+        }, function (res) {
+            $('#resultMeetingNow').html(res.responseText)
+        })
+    }
+</script>
 </body>
 </html>
