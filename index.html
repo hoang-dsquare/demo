@@ -36,7 +36,6 @@ const webex = window.webex = Webex.init({
   config: {
     credentials: {
       client_id: 'Cb257d2a93b52b6752da37c61963292c766264023b6f42f391d887a100ad9bb4b',
-      response_type: 'token',  
       redirect_uri,
       scope: 'meeting:recordings_read spark:kms meeting:admin_schedule_write meeting:schedules_read meeting:admin_recordings_write meeting:preferences_write meeting:recordings_write meeting:preferences_read meeting:admin_recordings_read meeting:admin_schedule_read meeting:schedules_write'
     }
@@ -78,14 +77,7 @@ webex.once('ready', () => {
     authStatus.innerHTML = 'Authenticated';
     authStatus.style = 'color: green';
       
-      webex.rooms
-      .create({
-        title: 'My First Room!'
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      }
+     }
 });
   </script>
 </body>
